@@ -98,7 +98,8 @@ class install(Builder):
 				logging.debug(f"Updating library paths.")
 				this.RunCommand(f"ldconfig {Path(this.paths['lib']).resolve()}")
 				
-			return this.result
+		return this.result
+			
 
 	# Required Merx method. See that class for details.
 	def Rollback(this):
