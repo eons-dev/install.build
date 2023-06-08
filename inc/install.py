@@ -9,8 +9,6 @@ class install(Builder):
 	def __init__(this, name="Install"):
 		super().__init__(name)
 
-		this.functionSucceeded = True
-		this.rollbackSucceeded = True
 		this.enableRollback = True
 
 		this.requiredKWArgs.append("paths")
@@ -29,6 +27,7 @@ class install(Builder):
 
 	# Required Merx method. See that class for details.
 	def Build(this):
+		this.functionSucceeded = True
 		if (not this.project_path):
 			this.functionSucceeded = False
 			return this.result
@@ -103,6 +102,7 @@ class install(Builder):
 
 	# Required Merx method. See that class for details.
 	def Rollback(this):
+		this.rollbackSucceeded = True
 		logging.info(f"Removing {this.projectName}...")
 		if (this.installed_at is None or this.installed_at is None or not len(this.installed_at)):
 			logging.debug(f"Nothing to remove for {this.projectName}")
