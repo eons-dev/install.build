@@ -16,12 +16,9 @@ class install(Builder):
 		this.optionalKWArgs["project_path"] = None
 		this.optionalKWArgs["installed_at"] = None
 
-		this.result = eons.util.DotDict()
-
 
 	# Reset result before each call.
 	def Initialize(this):
-		this.result = eons.util.DotDict()
 		super().Initialize()
 
 
@@ -30,8 +27,7 @@ class install(Builder):
 		this.functionSucceeded = True
 		if (not this.project_path):
 			this.functionSucceeded = False
-			return this.result
-
+			return
 		logging.info(f"Installing {this.projectName}...")
 		
 		installedObjects = []
@@ -92,23 +88,21 @@ class install(Builder):
 
 
 		if (this.functionSucceeded):
-			this.result.installed_at = ";".join(installedObjects)
+			this.result.data.installed_at = ";".join(installedObjects)
 			if (not os.geteuid()): #root = uid 0
 				logging.debug(f"Updating library paths.")
 				this.RunCommand(f"ldconfig {Path(this.paths['lib']).resolve()}")
-				
-		return this.result
-			
+							
 
 	# Required Merx method. See that class for details.
 	def Rollback(this):
 		this.rollbackSucceeded = True
 		logging.info(f"Removing {this.projectName}...")
-		if (this.installed_at is None or this.installed_at is None or not len(this.installed_at)):
+		if (this.result.data.installed_at is None or this.result.data.installed_at is None or not len(this.result.data.installed_at)):
 			logging.debug(f"Nothing to remove for {this.projectName}")
-			return this.result
+			return
 		
-		toRemove = this.installed_at.split(';')
+		toRemove = this.result.data.installed_at.split(';')
 		for thing in toRemove:
 			logging.debug(f"REMOVING: {thing}")
 			thing = Path(thing)
@@ -124,6 +118,5 @@ class install(Builder):
 			
 			#TODO: error checking
 	
-		this.result.installed_at = ""
+		this.result.data.installed_at = ""
 		super().Rollback()
-		return this.result
