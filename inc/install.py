@@ -1,8 +1,9 @@
 import os
 import logging
 import shutil
+from pathlib import Path
 from distutils.file_util import copy_file
-from distutils.dir_util import copy_tree, mkpath
+from distutils.dir_util import copy_tree
 from ebbs import Builder
 from ebbs import OtherBuildError
 
@@ -45,7 +46,7 @@ class install(Builder):
         if (os.path.exists(packagePath)):
             logging.info(f'DELETING {packagePath}')
             shutil.rmtree(packagePath)
-        mkpath(packagePath)
+        Path(packagePath).mkdir(parents=True, exist_ok=True)
 
         self.executor.DownloadPackage(self.package, registerClasses=False)
         if (not os.path.isdir(packagePath)):
@@ -65,7 +66,7 @@ class install(Builder):
                 elif os.path.isdir(thingPath):
                     destPath = os.path.join(self.installIncPath, thing)
                     logging.debug(f'Copying {thingPath} to {destPath}')
-                    mkpath(destPath)
+                    Path(destPath).mkdir(parents=True, exist_ok=True)
                     copy_tree(thingPath, destPath)
 
         if (self.projectType in ['bin']):
